@@ -2,7 +2,6 @@ import * as React from 'react'
 import { Provider as StyletronProvider, } from 'styletron-react'
 import { connectRouter, routerMiddleware, } from 'connected-react-router'
 import { Provider, } from 'react-redux'
-import { Child as AppShellInterop, } from '@wc-pocs/micro-frontend-interop'
 
 import App from './components/App/App'
 import * as serviceWorker from './serviceWorker'
@@ -10,6 +9,26 @@ import * as reducers from './modules'
 import Store from './Store'
 import StyletronEngine from './Styletron'
 import History from './History'
+
+export default function Subscriber() {
+  this.subscribe = cb => {
+    window.addEventListener('message', cb)
+  }
+}
+
+function AppShellInterop(config = {}) {
+  const { targetOrigin = '*', } = config
+
+  this.subscriber = new Subscriber()
+
+  this.emit = data => {
+    let parent = window
+    while (parent.parent !== parent) {
+      parent = parent.parent
+    }
+    parent.postMessage(data, targetOrigin)
+  }
+}
 
 const generateView = async args => {
   const {
@@ -20,6 +39,7 @@ const generateView = async args => {
   const appShell = new AppShellInterop({
     targetOrigin: '*',
   })
+
   appShell.subscriber.subscribe(e => {
     console.log('React Child', e)
   })

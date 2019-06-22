@@ -1,14 +1,19 @@
 import * as React from 'react'
 import * as PropTypes from 'prop-types'
+import { Formik, } from 'formik'
 import { styled, } from 'styletron-react'
 import { Link, } from 'react-router-dom'
 
-const ItemWrapper = styled(Link, {
+const ItemWrapper = styled('article', {
+  position: 'relative',
+})
+
+const ItemLink = styled(Link, {
   textDecoration: 'none',
   color: 'inherit',
 })
 
-const Item = styled('article', {
+const Item = styled('div', {
   border: '1px solid currentColor',
   margin: '1rem 0',
 })
@@ -23,19 +28,26 @@ const ItemTitle = styled('h2', {
   fontSize: '1em',
 })
 
-const ItemList = props => {
-  const {
-    items = [],
-    itemKey,
-    itemLink,
-  } = props
+const ItemAction = styled('div', {
+  position: 'absolute',
+  top: 0,
+  right: 0,
+})
 
-  return (
-    <React.Fragment>
-      {
-        items.map(item => (
-          <ItemWrapper
-            key={itemKey(item)}
+const ItemList = ({
+  items = [],
+  itemKey = null,
+  itemLink = null,
+  deleteItemForm = null,
+  onItemDelete = null,
+}) => (
+  <React.Fragment>
+    {
+      items.map(item => (
+        <ItemWrapper
+          key={itemKey(item)}
+        >
+          <ItemLink
             to={itemLink(item)}
           >
             <Item>
@@ -45,12 +57,21 @@ const ItemList = props => {
                 </ItemTitle>
               </ItemHeader>
             </Item>
-          </ItemWrapper>
-        ))
-      }
-    </React.Fragment>
-  )
-}
+          </ItemLink>
+          <ItemAction>
+            <Formik
+              component={deleteItemForm}
+              onSubmit={onItemDelete}
+              initialValues={{
+                key: itemKey(item),
+              }}
+            />
+          </ItemAction>
+        </ItemWrapper>
+      ))
+    }
+  </React.Fragment>
+)
 
 ItemList.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({

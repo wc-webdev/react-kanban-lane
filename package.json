@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "connected-react-router": "^6.4.0",
+    "formik": "^1.5.7",
     "history": "^4.9.0",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.7.2",
